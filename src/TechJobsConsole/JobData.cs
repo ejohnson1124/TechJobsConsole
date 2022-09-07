@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -38,6 +39,33 @@ namespace TechJobsConsole
             return values;
         }
 
+        //need to add something to allow for bool to return true/false and ignore casing. Thanks stack overflow https://stackoverflow.com/questions/444798/case-insensitive-containsstring/444818#444818
+
+
+        public static bool Contains(this string searchable, string searchTerm, StringComparison comparisonType)
+        {
+            return searchable?.IndexOf(searchTerm, comparisonType) >= 0;
+        }
+        public static List<Dictionary<string, string>> FindByValue(string searchTerm)
+        { LoadData();
+        
+        List<Dictionary<string, string>> jobs =  new List<Dictionary<string, string>>();
+            foreach (Dictionary<string, string> row in AllJobs)
+            {
+                foreach (KeyValuePair<string, string> kvp in row)//use bool for true/false and for each for looping
+                {
+                    bool foundInKey = kvp.Key.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase);//recommended on ms for ignoring case 
+                    bool foundInValue = kvp.Value.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase);
+
+                    if (foundInKey || foundInValue)
+                    {
+                        jobs.Add(row);
+                    }
+                }
+            }
+
+            return jobs;
+        }
         public static List<Dictionary<string, string>> FindByColumnAndValue(string column, string value)
         {
             // load data, if not already loaded
